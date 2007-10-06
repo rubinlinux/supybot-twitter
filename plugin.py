@@ -36,7 +36,7 @@ import supybot.callbacks as callbacks
 from string import *
 
 import twitter
-
+from urllib2 import URLError, HTTPError
 
 class Twitter(callbacks.Plugin):
     "Use !post to post messages via the associated twitter account."
@@ -64,6 +64,8 @@ class Twitter(callbacks.Plugin):
         """
         try:
             self.api.PostUpdate( utils.str.format("%s (%s)", text, msg.nick) )
+        except HTTPError:
+            irc.reply( "HTTP Error... it may have worked..." )
         except URLError:
             irc.reply( "URL Error... it may have worked..." )
         else:
@@ -75,10 +77,10 @@ class Twitter(callbacks.Plugin):
 
         Echoes the friends timeline.
         """
-        irc.reply( "Not implemented." );
-        # statuses = self.api.GetFriendsTimeline()
-        # statustuples = map(None, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        # irc.reply( join( statustuples, ', ') )
+        statuses = self.api.GetFriendsTimeline()
+        def nametext(name,text) : return text + " (" + name + ")"
+        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
+        irc.reply( join( statustuples, ', ') )
     tweets = wrap(tweets)
 
 Class = Twitter
