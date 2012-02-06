@@ -1,9 +1,13 @@
 SupyBot Twitter Plugin
 ======================
 
-This plugin uses the Twitter API from http://code.google.com/p/python-twitter/
+This code is forked from
+http://code.google.com/p/supybot-twitter which has not been
+updated in a long time. This version has been updated to post using the new
+twitter API (and so, works, again)
 
-It must be installed and available for use.
+This plugin uses the Twitter API from http://code.google.com/p/python-twitter/
+so it must be installed and available for use.
 
 To use:
   !twitter <msg>
