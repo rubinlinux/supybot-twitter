@@ -38,19 +38,33 @@ def configure(advanced):
     # registry as appropriate.
     from supybot.questions import expect, anything, something, yn
     Twitter = conf.registerPlugin('Twitter', True)
-    account = something("twitter.com account name:");
-    Twitter.account.setValue(account)
-    password = something("twitter.com password:");
-    Twitter.password.setValue(password)
+    consumer_key = something("twitter.com consumer key:");
+    Twitter.consumer_key.setValue(consumer_key)
+    consumer_secret = something("twitter.com consumer secret:");
+    Twitter.consumer_secret.setValue(consumer_secret)
+
+    access_key = something("twitter.com access token:");
+    Twitter.access_key.setValue(access_key)
+    access_secret = something("twitter.com access token secret:");
+    Twitter.access_secret.setValue(access_secret)
+
 
 Twitter = conf.registerPlugin('Twitter')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Twitter, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
-conf.registerGlobalValue(Twitter, 'account',
-        registry.String('', "twitter.com account name"))
-conf.registerGlobalValue(Twitter, 'password',
-        registry.String('', "twitter.com password"))
+conf.registerChannelValue(Twitter, 'enabled',
+        registry.Boolean(False, 'Enable this plugin'))
+conf.registerGlobalValue(Twitter, 'consumer_key',
+        registry.String('', "twitter.com consumer_key", private=True))
+conf.registerGlobalValue(Twitter, 'consumer_secret',
+        registry.String('', "twitter.com consumer_secret", private=True))
+conf.registerGlobalValue(Twitter, 'access_key',
+        registry.String('', "twitter.com access_key", private=True))
+conf.registerGlobalValue(Twitter, 'access_secret',
+        registry.String('', "twitter.com access_secret", private=True))
+
+
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

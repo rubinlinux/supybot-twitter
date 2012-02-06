@@ -45,9 +45,15 @@ class Twitter(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Twitter, self)
         self.__parent.__init__(irc)
-        t_username = self.registryValue('account')
-        t_password = self.registryValue('password')
-        self.api = twitter.Api( username=t_username, password=t_password )
+        t_consumer_key = self.registryValue('consumer_key')
+        t_consumer_secret = self.registryValue('consumer_secret')
+        t_access_key = self.registryValue('access_key')
+        t_access_secret = self.registryValue('access_secret')
+        self.api = twitter.Api(consumer_key=t_consumer_key,
+                    consumer_secret=t_consumer_secret,
+                    access_token_key=t_access_key,
+                    access_token_secret=t_access_secret)
+
 
     def listfriends(self, irc, msg, args):
         """takes no arguments
@@ -62,6 +68,9 @@ class Twitter(callbacks.Plugin):
 
         Posts <text> to the twitter network.
         """
+        channel = msg.args[0]
+        if not self.registryValue('enabled', channel):
+                    return
         try:
             self.api.PostUpdate( utils.str.format("%s (%s)", text, msg.nick) )
         except HTTPError:
