@@ -36,7 +36,6 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 from string import *
 
-import time
 import twitter
 from urllib2 import URLError, HTTPError
 
@@ -96,7 +95,7 @@ class Twitter(callbacks.Plugin):
         irc.reply( join( statustuples, ', ') )
     tweets = wrap(tweets)
 
-    def mentions(self, irc, msg, seconds, channel):
+    def mentions(self, irc, msg, args, seconds, channel):
         """<seconds> <channel>
 
         Get the latest @mentions every <seconds> sec, and output to <channel>.
@@ -104,10 +103,10 @@ class Twitter(callbacks.Plugin):
         if channel in self.chans:
             irc.error('There is already an event with that name, please '
                       'choose another name.', Raise=True)
-        self.chans[name] = True
+        self.chans[channel] = True
         f = self._makeCommandFunction(irc, msg, _getMentions(channel), remove=False)
-        id = schedule.addPeriodicEvent(f, seconds, name)
-        assert id == name
+        id = schedule.addPeriodicEvent(f, seconds, channel)
+        assert id == channel
 
     mentions = wrap(mentions)
 
