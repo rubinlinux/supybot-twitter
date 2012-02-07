@@ -117,7 +117,7 @@ class Twitter(callbacks.Plugin):
             statuses = self.api.GetMentions(sinceid=self.mentionSince)
         def nametext(name,text) : return text + " (" + name + ")"
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, ', ')))
+        irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, '\n ')))
         irc.noReply()
         self.mentionSince = statuses[-1].id
 
