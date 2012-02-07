@@ -34,6 +34,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from string import *
+import time
 
 import twitter
 from urllib2 import URLError, HTTPError
@@ -91,6 +92,25 @@ class Twitter(callbacks.Plugin):
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
         irc.reply( join( statustuples, ', ') )
     tweets = wrap(tweets)
+
+    def mentions(self, irc, msg, args, seconds, channel):
+        """<seconds> <channel>
+
+        Get the latest @mentions every <seconds> sec, and output to <channel>.
+        """
+        since = None
+        def nametext(name,text) : return text + " (" + name + ")"
+        while True:
+            if since is None:
+                statuses = self.api.GetMentions()
+            else:
+                statuses = self.api.GetMentions(sinceid=since)
+            statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
+            irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, ', ')))
+            irc.noReply()
+            since = statuses[-1].id
+            time.sleep(seconds)
+    mentions = wrap(mentions)
 
 Class = Twitter
 
