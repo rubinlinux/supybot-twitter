@@ -96,7 +96,7 @@ class Twitter(callbacks.Plugin):
         irc.reply( join( statustuples, ', ') )
     tweets = wrap(tweets)
 
-    def mentions(self, irc, msg, args, seconds, channel):
+    def mentions(self, irc, msg, seconds, channel):
         """<seconds> <channel>
 
         Get the latest @mentions every <seconds> sec, and output to <channel>.
