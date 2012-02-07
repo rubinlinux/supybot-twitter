@@ -92,25 +92,14 @@ class Twitter(callbacks.Plugin):
         statuses = self.api.GetFriendsTimeline()
         def nametext(name,text) : return text + " (" + name + ")"
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        irc.reply( join( statustuples, ', ') )
+        irc.reply( join( statustuples, '\n ') )
     tweets = wrap(tweets)
 
     def mentions(self, irc, msg, args, seconds, channel):
-        """<seconds> <channel>
+        """takes no arguments
 
-        Get the latest @mentions every <seconds> sec, and output to <channel>.
+        Get the latest @mentions.
         """
-        if channel in self.chans:
-            irc.error('There is already an event with that name, please '
-                      'choose another name.', Raise=True)
-        self.chans[channel] = True
-        f = self._makeCommandFunction(irc, msg, _getMentions(channel), remove=False)
-        id = schedule.addPeriodicEvent(f, seconds, channel)
-        assert id == channel
-
-    mentions = wrap(mentions)
-
-    def _getMentions(self, irc, msg, channel):
         if self.mentionSince is None:
             statuses = self.api.GetMentions()
         else:
@@ -120,16 +109,7 @@ class Twitter(callbacks.Plugin):
         irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, '\n ')))
         irc.noReply()
         self.mentionSince = statuses[-1].id
-
-    #steal liberally from the Scheduler plugin
-    def _makeCommandFunction(self, irc, msg, command, remove=True):
-        """Makes a function suitable for scheduling from command."""
-        tokens = callbacks.tokenize(command)
-        def f():
-            if remove:
-                del self.events[str(f.eventId)]
-            self.Proxy(irc.irc, msg, tokens)
-        return f
+    mentions = wrap(mentions)
 
 Class = Twitter
 
