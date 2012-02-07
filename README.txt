@@ -13,6 +13,10 @@ twitter API (and so, works, again)
 This plugin uses the Twitter API from http://code.google.com/p/python-twitter/
 so it must be installed and available for use.
 
+It can be installed via pip like so:
+
+    pip install python-twitter
+
 To use:
   !post <msg>
     Sends <msg> to the twitter network.

@@ -32,10 +32,11 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
+import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 from string import *
-import time
 
+import time
 import twitter
 from urllib2 import URLError, HTTPError
 
@@ -46,6 +47,8 @@ class Twitter(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Twitter, self)
         self.__parent.__init__(irc)
+        self.mentionSince = None
+        self.chans = {}
         t_consumer_key = self.registryValue('consumer_key')
         t_consumer_secret = self.registryValue('consumer_secret')
         t_access_key = self.registryValue('access_key')
@@ -98,19 +101,36 @@ class Twitter(callbacks.Plugin):
 
         Get the latest @mentions every <seconds> sec, and output to <channel>.
         """
-        since = None
-        def nametext(name,text) : return text + " (" + name + ")"
-        while True:
-            if since is None:
-                statuses = self.api.GetMentions()
-            else:
-                statuses = self.api.GetMentions(sinceid=since)
-            statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-            irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, ', ')))
-            irc.noReply()
-            since = statuses[-1].id
-            time.sleep(seconds)
+        if channel in self.chans:
+            irc.error('There is already an event with that name, please '
+                      'choose another name.', Raise=True)
+        self.chans[name] = True
+        f = self._makeCommandFunction(irc, msg, _getMentions(channel), remove=False)
+        id = schedule.addPeriodicEvent(f, seconds, name)
+        assert id == name
+
     mentions = wrap(mentions)
+
+    def _getMentions(self, irc, msg, channel):
+        if self.mentionSince is None:
+            statuses = self.api.GetMentions()
+        else:
+            statuses = self.api.GetMentions(sinceid=self.mentionSince)
+        def nametext(name,text) : return text + " (" + name + ")"
+        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
+        irc.queueMsg(ircmsgs.privmsg(channel, join( statustuples, ', ')))
+        irc.noReply()
+        self.mentionSince = statuses[-1].id
+
+    #steal liberally from the Scheduler plugin
+    def _makeCommandFunction(self, irc, msg, command, remove=True):
+        """Makes a function suitable for scheduling from command."""
+        tokens = callbacks.tokenize(command)
+        def f():
+            if remove:
+                del self.events[str(f.eventId)]
+            self.Proxy(irc.irc, msg, tokens)
+        return f
 
 Class = Twitter
 
