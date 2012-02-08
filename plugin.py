@@ -68,16 +68,12 @@ class Twitter(callbacks.Plugin):
 
     def _mention(self, irc):
         statuses = self.api.GetMentions(since_id=self.mentionSince)
-        try:
+        if len(statuses) > 0:
             self.mentionSince = statuses[0].id
-        except IndexError:
-            pass
-        else:
             for channel in self.registryValue('channelList'):
                 irc.queueMsg(ircmsgs.privmsg(channel, self.registryValue('replyAnnounceMsg')))
-                def nametext(name,text) : return name + " -- " + text
-                statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-                for msg in statustuples:
+                for status in statuses:
+                    msg = status.user.screen_name + ' -- ' + status.text
                     irc.queueMsg(ircmsgs.privmsg(channel, msg))
                     irc.noReply()
 
@@ -86,10 +82,8 @@ class Twitter(callbacks.Plugin):
 
         Displays latest <number> mentions"""
         statuses = self.api.GetMentions()
-        def nametext(name,text) : return name + " -- " + text
-        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        for msg in statustuples[:number]:
-            irc.reply( msg )
+        for status in statuses[:number]:
+            irc.reply(status.user.screen_name + ' -- ' + status.text)
     mentions = wrap(mentions, ['positiveInt'])
 
     def listfriends(self, irc, msg, args):
@@ -124,9 +118,8 @@ class Twitter(callbacks.Plugin):
         Echoes the friends timeline.
         """
         statuses = self.api.GetFriendsTimeline()
-        def nametext(name,text) : return text + " (" + name + ")"
-        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        irc.reply( " || ".join(statustuples) )
+        status_strs = ['%s (%s)' % (s.text, s.user.screen_name) for s in statuses]
+        irc.reply(" || ".join(status_strs))
     tweets = wrap(tweets)
 
 Class = Twitter
