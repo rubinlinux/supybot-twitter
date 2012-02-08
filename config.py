@@ -63,12 +63,12 @@ conf.registerGlobalValue(Twitter, 'access_key',
 conf.registerGlobalValue(Twitter, 'access_secret',
         registry.String('', "twitter.com access_secret", private=True))
 conf.registerGlobalValue(Twitter, 'displayReplies',
-        registry.String(True, "Automatically display replies?", private=True))
+        registry.Boolean(True, "Automatically display replies?", private=False))
 conf.registerGlobalValue(Twitter, 'replyAnnounceMsg',
-        registry.String("Here's what Twitter has to say:", "String to use when announcing replies.", private=True))
+        registry.String("Here's what Twitter has to say:", "String to use when announcing replies.", private=False))
 conf.registerGlobalValue(Twitter, 'postConfirmation',
-        registry.String("Posted.", "String to use when confirming a post", private=True))
+        registry.String("Posted.", "String to use when confirming a post", private=False))
 conf.registerGlobalValue(Twitter, 'channelList',
-        registry.String("", "List of channels to broadcast in.", private=True))
+        registry.String("", "List of channels to broadcast in.", private=False))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
