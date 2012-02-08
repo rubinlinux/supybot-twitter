@@ -94,7 +94,7 @@ class Twitter(callbacks.Plugin):
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
         for tup in statustuples:
         #irc.reply( join( statustuples, '\n ') )
-            irc.reply( tup )
+            irc.reply( join(statustuples, "\n") )
     tweets = wrap(tweets)
 
     def mentions(self, irc, msg, args, seconds, channel):
