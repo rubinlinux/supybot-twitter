@@ -92,9 +92,7 @@ class Twitter(callbacks.Plugin):
         statuses = self.api.GetFriendsTimeline()
         def nametext(name,text) : return text + " (" + name + ")"
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        for tup in statustuples:
-        #irc.reply( join( statustuples, '\n ') )
-            irc.reply( join(statustuples, "\n") )
+        irc.reply( "\n".join(statustuples) )
     tweets = wrap(tweets)
 
     def mentions(self, irc, msg, args, seconds, channel):
