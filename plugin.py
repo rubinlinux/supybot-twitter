@@ -49,7 +49,6 @@ class Twitter(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.irc = irc
         self.mentionSince = None
-        irc.sendMsg(networkGroup.channels.join(channel))
         try:
             schedule.removeEvent('Mentions')
         except KeyError:
