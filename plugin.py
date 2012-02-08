@@ -86,10 +86,11 @@ class Twitter(callbacks.Plugin):
 
         Displays latest <number> mentions"""
         statuses = self.api.GetMentions()
+        def nametext(name,text) : return name + " -- " + text
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
         for msg in statustuples[:number]:
             irc.reply( msg )
-    mentions = wrap(mentions ['number'])
+    mentions = wrap(mentions, ['positiveInt'])
 
     def listfriends(self, irc, msg, args):
         """takes no arguments
