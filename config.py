@@ -68,5 +68,7 @@ conf.registerGlobalValue(Twitter, 'replyAnnounceMsg',
         registry.String("Here's what Twitter has to say:", "String to use when announcing replies.", private=True))
 conf.registerGlobalValue(Twitter, 'postConfirmation',
         registry.String("Posted.", "String to use when confirming a post", private=True))
+conf.registerGlobalValue(Twitter, 'channelList',
+        registry.String("", "List of channels to broadcast in.", private=True))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
