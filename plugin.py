@@ -73,8 +73,7 @@ class Twitter(callbacks.Plugin):
         except IndexError:
             pass
         else:
-            networkGroup = conf.supybot.networks.get(irc.network)
-            for channel in networkGroup.channels():
+            for channel in self.registryValue('channelList'):
                 irc.queueMsg(ircmsgs.privmsg(channel, self.registryValue('replyAnnounceMsg')))
                 def nametext(name,text) : return name + " -- " + text
                 statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
@@ -82,13 +81,15 @@ class Twitter(callbacks.Plugin):
                     irc.queueMsg(ircmsgs.privmsg(channel, msg))
                     irc.noReply()
 
-    def mentions(self, irc, msg, args):
-        """takes no arguments
+    def mentions(self, irc, msg, args, number):
+        """<number>
 
-        Displays latest mentions"""
-        irc.reply("Mention worker poked")
-        self._mention(irc)
-    mentions = wrap(mentions)
+        Displays latest <number> mentions"""
+        statuses = self.api.GetMentions()
+        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
+        for msg in statustuples[:number]:
+            irc.reply( msg )
+    mentions = wrap(mentions ['number'])
 
     def listfriends(self, irc, msg, args):
         """takes no arguments
