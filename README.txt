@@ -5,6 +5,9 @@ This is a twitter plugin for supybot. It can post to twitter, and show your
 friend list. It will add (ircnick) after tweets. We use it to post to an
 organizational twitter account from our channel.
 
+The current version is always available at 
+https://github.com/rubinlinux/supybot-twitter.
+
 This code is forked from http://code.google.com/p/supybot-twitter which
 has not been updated in a long time. This version has been updated to
 post using the new twitter API (and so, works, again).
@@ -41,3 +44,5 @@ Automatic actions:
     The bot will automatically post mentions the channels in
     channelList. To disable this behaviour, set displayReplies to
     'False'
+
+
