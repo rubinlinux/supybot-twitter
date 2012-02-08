@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2007, Andy Berdan
+# Copyright (c) 2007-2012, Andy Berdan, Henry Donnay
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ def configure(advanced):
     access_secret = something("twitter.com access token secret:");
     Twitter.access_secret.setValue(access_secret)
 
-
 Twitter = conf.registerPlugin('Twitter')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Twitter, 'someConfigVariableName',
@@ -63,8 +62,11 @@ conf.registerGlobalValue(Twitter, 'access_key',
         registry.String('', "twitter.com access_key", private=True))
 conf.registerGlobalValue(Twitter, 'access_secret',
         registry.String('', "twitter.com access_secret", private=True))
-
-
-
+conf.registerGlobalValue(Twitter, 'displayReplies',
+        registry.String(True, "Automatically display replies?", private=True))
+conf.registerGlobalValue(Twitter, 'replyAnnounceMsg',
+        registry.String("Here's what Twitter has to say:", "String to use when announcing replies.", private=True))
+conf.registerGlobalValue(Twitter, 'postConfirmation',
+        registry.String("Posted.", "String to use when confirming a post", private=True))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

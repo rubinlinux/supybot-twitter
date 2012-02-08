@@ -18,9 +18,24 @@ It can be installed via pip like so:
     pip install python-twitter
 
 To use:
-  !post <msg>
+  post <msg>
     Sends <msg> to the twitter network.
     If <msg> is one of the twitter commands, it is sent raw, via the
     	associated twitter user.
     If not, the IRC user's name is appended to <msg> and is then sent.
 
+    The value of postConfirmation will be used as the confirmation
+    for a successful post.
+
+  mentions
+    Display latest mentions.
+
+  listfriends
+    List followers.
+
+  tweets
+    Display latest page of tweets.
+
+Automatic actions:
+    The bot will automatically post mentions in the channels it is in. To
+    disable this behaviour, set displayReplies to 'False'

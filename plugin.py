@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2007, Andy Berdan
+# Copyright (c) 2007-2012, Andy Berdan, Alex Schumann, Henry Donnay
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+from supybot import ircmsgs
 from string import *
 
 import twitter
@@ -46,17 +47,48 @@ class Twitter(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Twitter, self)
         self.__parent.__init__(irc)
+        self.irc = irc
         self.mentionSince = None
-        self.chans = {}
+        irc.sendMsg(networkGroup.channels.join(channel))
+        try:
+            schedule.removeEvent('Mentions')
+        except KeyError:
+            pass
         t_consumer_key = self.registryValue('consumer_key')
         t_consumer_secret = self.registryValue('consumer_secret')
         t_access_key = self.registryValue('access_key')
         t_access_secret = self.registryValue('access_secret')
-        self.api = twitter.Api(consumer_key=t_consumer_key,
-                    consumer_secret=t_consumer_secret,
-                    access_token_key=t_access_key,
-                    access_token_secret=t_access_secret)
+        self.api = twitter.Api(consumer_key=t_consumer_key, consumer_secret=t_consumer_secret, access_token_key=t_access_key, access_token_secret=t_access_secret)
+        if self.registryValue('displayReplies'):
+            statuses = self.api.GetMentions()
+            self.mentionSince = statuses[0].id
+            def mentionCaller():
+                self._mention(irc)
+            schedule.addPeriodicEvent(mentionCaller, 300, 'Mentions')
 
+    def _mention(self, irc):
+        statuses = self.api.GetMentions(since_id=self.mentionSince)
+        try:
+            self.mentionSince = statuses[0].id
+        except IndexError:
+            pass
+        else:
+            networkGroup = conf.supybot.networks.get(irc.network)
+            for channel in networkGroup.channels():
+                irc.queueMsg(ircmsgs.privmsg(channel, self.registryValue('replyAnnounceMsg')))
+                def nametext(name,text) : return name + " -- " + text
+                statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
+                for msg in statustuples:
+                    irc.queueMsg(ircmsgs.privmsg(channel, msg))
+                    irc.noReply()
+
+    def mentions(self, irc, msg, args):
+        """takes no arguments
+
+        Displays latest mentions"""
+        irc.reply("Mention worker poked")
+        self._mention(irc)
+    mentions = wrap(mentions)
 
     def listfriends(self, irc, msg, args):
         """takes no arguments
@@ -73,7 +105,7 @@ class Twitter(callbacks.Plugin):
         """
         channel = msg.args[0]
         if not self.registryValue('enabled', channel):
-                    return
+            return
         try:
             self.api.PostUpdate( utils.str.format("%s (%s)", text, msg.nick) )
         except HTTPError:
@@ -81,7 +113,7 @@ class Twitter(callbacks.Plugin):
         except URLError:
             irc.reply( "URL Error... it may have worked..." )
         else:
-            irc.reply( "Posted." )
+            irc.reply( self.registryValue('postConfirmation') )
     post = wrap(post, ['text'])
 
     def tweets(self, irc, msg, args):
@@ -95,23 +127,5 @@ class Twitter(callbacks.Plugin):
         irc.reply( " || ".join(statustuples) )
     tweets = wrap(tweets)
 
-    def mentions(self, irc, msg, args, seconds, channel):
-        """takes no arguments
-
-        Get the latest @mentions.
-        """
-        if self.mentionSince is None:
-            statuses = self.api.GetMentions()
-        else:
-            statuses = self.api.GetMentions(sinceid=self.mentionSince)
-        def nametext(name,text) : return text + " (" + name + ")"
-        statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
-        irc.queueMsg(ircmsgs.privmsg(channel, " || ".join(statustuples)))
-        irc.noReply()
-        self.mentionSince = statuses[-1].id
-    mentions = wrap(mentions)
-
 Class = Twitter
-
-
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
