@@ -70,7 +70,7 @@ class Twitter(callbacks.Plugin):
         statuses = self.api.GetMentions(since_id=self.mentionSince)
         if len(statuses) > 0:
             self.mentionSince = statuses[0].id
-            for channel in self.registryValue('channelList'):
+            for channel in self.registryValue('channelList').split():
                 irc.queueMsg(ircmsgs.privmsg(channel, self.registryValue('replyAnnounceMsg')))
                 for status in statuses:
                     msg = status.user.screen_name + ' -- ' + status.text
