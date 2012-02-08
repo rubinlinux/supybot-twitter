@@ -35,7 +35,6 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
-import supybot.conf as conf
 from supybot import ircmsgs
 from string import *
 
