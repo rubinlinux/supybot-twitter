@@ -89,7 +89,7 @@ class Twitter(callbacks.Plugin):
         statustuples = map(nametext, [s.user.screen_name for s in statuses], [s.text for s in statuses])
         for msg in statustuples[:number]:
             irc.reply( msg )
-    mentions = wrap(mentions ['number'])
+    mentions = wrap(mentions, ['number'])
 
     def listfriends(self, irc, msg, args):
         """takes no arguments
