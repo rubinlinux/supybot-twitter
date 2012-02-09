@@ -41,8 +41,13 @@ To use:
     Display latest page of tweets.
 
 Automatic actions:
+    Mentions
     The bot will automatically post mentions the channels in
     channelList. To disable this behaviour, set displayReplies to
     'False'
+
+    Topic Snarfing
+    If tweetTopicSnarf is enabled, newly seen segments of the topic will be
+    auto-tweeted.
 
 

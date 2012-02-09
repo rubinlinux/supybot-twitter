@@ -37,9 +37,26 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 from supybot import ircmsgs
 from string import *
+import re
 
 import twitter
 from urllib2 import URLError, HTTPError
+import supybot.dbi as dbi
+
+class snarfRecord(dbi.Record):
+   __fields__ = [
+       ('tweet', eval)
+       ]
+class snarfDB(plugins.DbiChannelDB):
+    class DB(dbi.DB):
+        Record = snarfRecord
+        def add(self, tweet):
+            record = self.Record(tweet=tweet)
+            super(self.__class__, self).add(record)
+        def tweets(self):
+            return list(self)
+
+SNARFDB = plugins.DB('snarf', {'flat': snarfDB})
 
 class Twitter(callbacks.Plugin):
     "Use !post to post messages via the associated twitter account."
@@ -50,6 +67,7 @@ class Twitter(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.irc = irc
         self.mentionSince = None
+        self.snarfdb = SNARFDB()
         try:
             schedule.removeEvent('Mentions')
         except KeyError:
@@ -122,5 +140,21 @@ class Twitter(callbacks.Plugin):
         irc.reply(" || ".join(status_strs))
     tweets = wrap(tweets)
 
+    def doTopic(self, irc, msg):
+        chan = msg.args[0]
+        newTopic = msg.args[1]
+        
+        if self.registryValue('tweetTopicSnarf', chan):
+            # Split the new topic into segments - TODO: store seperator regex in config
+            newSegments = [item.strip() for item in re.split('[-|]', newTopic) ]
+            # Get old segments from db
+            oldSegments = [item.tweet.strip() for item in self.snarfdb.tweets(chan)]
+
+            for newSegment in newSegments:
+                if newSegment not in oldSegments:
+                    # Add to db: TODO - trim this if it gets huge!
+                    self.snarfdb.add(chan, newSegment)
+                    self.api.PostUpdate( format("%s (%s)", newSegment, msg.nick) )
+
 Class = Twitter
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 tabstop=4 expandtab:

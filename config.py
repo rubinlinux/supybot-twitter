@@ -54,6 +54,8 @@ Twitter = conf.registerPlugin('Twitter')
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 conf.registerChannelValue(Twitter, 'enabled',
         registry.Boolean(False, 'Enable this plugin'))
+conf.registerChannelValue(Twitter, 'tweetTopicSnarf', 
+        registry.Boolean(False, 'Snarf new segments of the topic, and tweet them'))
 conf.registerGlobalValue(Twitter, 'consumer_key',
         registry.String('', "twitter.com consumer_key", private=True))
 conf.registerGlobalValue(Twitter, 'consumer_secret',
@@ -71,4 +73,4 @@ conf.registerGlobalValue(Twitter, 'postConfirmation',
 conf.registerGlobalValue(Twitter, 'channelList',
         registry.String("", "List of channels to broadcast in.", private=False))
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 tabstop=4 expandtab:
