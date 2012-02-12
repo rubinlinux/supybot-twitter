@@ -79,7 +79,8 @@ class Twitter(callbacks.Plugin):
         self.api = twitter.Api(consumer_key=t_consumer_key, consumer_secret=t_consumer_secret, access_token_key=t_access_key, access_token_secret=t_access_secret)
         if self.registryValue('displayReplies'):
             statuses = self.api.GetMentions()
-            self.mentionSince = statuses[0].id
+            if len(statuses) > 0:
+                self.mentionSince = statuses[0].id
             def mentionCaller():
                 self._mention(irc)
             schedule.addPeriodicEvent(mentionCaller, 300, 'Mentions')
