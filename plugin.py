@@ -147,7 +147,7 @@ class Twitter(callbacks.Plugin):
         
         if self.registryValue('tweetTopicSnarf', chan):
             # Split the new topic into segments - TODO: store seperator regex in config
-            newSegments = [item.strip() for item in re.split('[-|]', newTopic) ]
+            newSegments = [item.strip() for item in re.split(' [-|] ', newTopic) ]
             # Get old segments from db
             oldSegments = [item.tweet.strip() for item in self.snarfdb.tweets(chan)]
 
