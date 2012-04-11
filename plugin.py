@@ -113,6 +113,15 @@ class Twitter(callbacks.Plugin):
         irc.reply( utils.str.format("%L", [u.screen_name for u in users] ) )
     listfriends = wrap(listfriends)
 
+    def listfollowers(self, irc, msg, args):
+        """takes no arguments
+
+        Echoes the follewers list."""
+        users = self.api.GetFollowers()
+        irc.reply( utils.str.format("%L", [u.screen_name for u in users] ) )
+    listfollowers = wrap(listfollowers)
+
+
     def post(self, irc, msg, args, text):
         """<text>
 
