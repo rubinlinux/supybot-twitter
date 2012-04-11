@@ -138,8 +138,26 @@ class Twitter(callbacks.Plugin):
         """
         statuses = self.api.GetFriendsTimeline()
         status_strs = ['%s (%s)' % (s.text, s.user.screen_name) for s in statuses]
-        irc.reply(" || ".join(status_strs))
+
+        if(status_strs):
+            irc.reply(" || ".join(status_strs))
+        else:
+            irc.reply("None")
     tweets = wrap(tweets)
+
+    def messages(self, irc, msg, args):
+        """takes no arguments
+
+        Echoes direct messages.
+        """
+        dms = self.api.GetDirectMessages()
+        dm_strs = ['(from @%s) %s' % (m.sender_screen_name, m.text) for m in dms]
+        if(dm_strs):
+	    irc.reply(" || ".join(dm_strs))
+        else:
+            irc.reply("No messages");
+    messages = wrap(messages)
+
 
     def doTopic(self, irc, msg):
         chan = msg.args[0]
