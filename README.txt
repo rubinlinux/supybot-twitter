@@ -39,11 +39,18 @@ To Setup:
       /msg bot config plugins.twitter.access_secret xxxxx
   Enable the plugin in the channel you want:
       !config channel plugins.twitter.enabled True
-  If you want replies (mentions):
-      !config plugins.twitter.displayReplies True
-      !config plugins.twitter.channelList #yourchannel
+
   If you want topic snarfing:
       !config channel plugins.twitter.tweettopicsnarf True
+
+#!!!!
+# Twitter has deprecated the mechanism we used to do this as a part of their war on 3rd party clients.
+# http://code.google.com/p/python-twitter/issues/detail?id=144
+# currently enabling displayReplies will result in the plugin crashing. :(
+#  If you want replies (mentions):
+#      !config plugins.twitter.displayReplies True
+#      !config plugins.twitter.channelList #yourchannel
+#!!!!
 
 To use:
   post <msg>
