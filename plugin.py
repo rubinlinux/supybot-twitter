@@ -39,7 +39,8 @@ from supybot import ircmsgs
 from string import *
 import re
 
-from twitter import (TwitterError)
+#from twitter import (TwitterError)
+import twitter
 from urllib2 import URLError, HTTPError
 import supybot.dbi as dbi
 
@@ -122,7 +123,7 @@ class Twitter(callbacks.Plugin):
     listfollowers = wrap(listfollowers)
 
 
-    def post(self, irc, msg, args, text):
+    def tweet(self, irc, msg, args, text):
         """<text>
 
         Posts <text> to the twitter network.
@@ -136,10 +137,18 @@ class Twitter(callbacks.Plugin):
             irc.reply( "HTTP Error... it may have worked..." )
         except URLError:
             irc.reply( "URL Error... it may have worked..." )
-        except TwitterError as e:
+        except twitter.TwitterError as e:
             irc.reply( "Error posting tweet." + e.message )
         else:
             irc.reply( self.registryValue('postConfirmation') )
+    tweet = wrap(tweet, ['text'])
+
+    def post(self, irc, msg, args, text):
+        """<text>
+
+        Tells you to fuck off.
+        """
+        irc.reply("Use 'tweet'")
     post = wrap(post, ['text'])
 
     def tweets(self, irc, msg, args):
